@@ -76,12 +76,12 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative w-full min-h-screen overflow-x-hidden">
       {/* Loading Animation Overlay */}
       {isLoading && (
         <div
           className={`fixed inset-0 flex items-center justify-center z-50 
-          bg-transparent backdrop-blur-lg transition-all duration-1000 
+          bg-transparent backdrop-blur-sm transition-all duration-1000 
           ${animateOut ? "opacity-0" : "opacity-100"}`}
         >
           <LoadingAnimation />

@@ -12,6 +12,7 @@ body {
 .max-container {
   max-width: 1400px;
   margin: 0 auto;
+  margin-inline: auto;
 }
 
 .inspiration-regular {
@@ -19,4 +20,5 @@ body {
   font-weight: 400;
   font-style: normal;
 }
+
 
