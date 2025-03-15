@@ -24,18 +24,24 @@ const item = {
 
 
 export default function Form() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  interface FormData {
+    name: string;
+    email: string;
+    message: string;
+  }
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
-  const sendEmail = (params) => {
+  const sendEmail = (params: { to_name: string; from_name: string; reply_to: string; message: string }) => {
 
     const toastId = toast.loading('Sending your message, please wait...')
 
     emailjs
-      .send(process.env.NEXT_PUBLIC_SERVICE_ID, 
-        process.env.NEXT_PUBLIC_TEMPLATE_ID, 
+      .send(process.env.NEXT_PUBLIC_SERVICE_ID as string, 
+        process.env.NEXT_PUBLIC_TEMPLATE_ID as string, 
         params,
         {
-        publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY,
+        publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY as string,
         limitRate:{
             throttle: 5000,
         }
@@ -56,7 +62,7 @@ export default function Form() {
       );
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: { name: string; email: string; message: string }) => {
     const templateParams = {
         to_name: "Suraj",
         from_name: data.name,
