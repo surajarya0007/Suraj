@@ -67,7 +67,7 @@ export default function Contact() {
       contentTimeline.fromTo(
         contentRef.current,
         { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, ease: "none" }
+        { scale: 0.8, opacity: 1, ease: "none" }
       );
     });
   
