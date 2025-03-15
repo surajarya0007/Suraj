@@ -38,7 +38,7 @@ export default function About() {
       scrollTrigger: {
         trigger: sectionEl,
         start: "top top",
-        end: "+=1300",
+        end: "+=5000",
         pin: true,
         scrub: 0.5,
       },

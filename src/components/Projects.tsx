@@ -110,7 +110,7 @@ export default function Projects() {
         {projects.map((project, index) => (
           <div
             key={index}
-            className="card absolute w-full  h-[580px] bg-black p-8 rounded-2xl shadow-xl"
+            className="card absolute left-1/2 transform -translate-x-1/2 w-11/12 h-[580px] bg-black p-8 rounded-2xl shadow-xl"
             style={{
               top: `${index * 600}px`,
             }}
