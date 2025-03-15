@@ -95,7 +95,7 @@ export default function Hero() {
 >
   <div
     ref={lettersContainerRef}
-    className="inspiration-regular text-[10vw] md:text-[13vw] font-bold uppercase leading-none flex items-center justify-center"
+    className="inspiration-regular text-[10vw] h-auto md:text-[13vw] font-bold uppercase leading-none flex items-center justify-center"
   >
     <span ref={sRef} className="text-[#cf005d] opacity-0 translate-y-24">S</span>
     <span ref={uRef} className="text-white opacity-0 translate-y-24">U</span>
