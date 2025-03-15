@@ -133,7 +133,7 @@ export default function Skills() {
       </div>
 
       <div className="max-w-6xl mx-auto space-y-16">
-        {skillSections.map((section, i) => (
+        {skillSections.map((section) => (
           <div key={section.heading} className="skill-row">
             {/* Section Heading */}
             <h3 className="text-2xl font-bold text-center mb-6 ">

@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Experience from "@/components/Experience";
@@ -95,7 +94,7 @@ export default function Home() {
           isLoading ? "visible" : "opacity-100"
         } transition-opacity duration-1000`}
       >
-        {/* <Navbar /> */}
+        
         <Hero />
         <About />
         <Experience />
