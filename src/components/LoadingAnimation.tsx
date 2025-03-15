@@ -42,13 +42,13 @@ export default function LoadingAnimation() {
   return (
     <section
       ref={containerRef}
-      className="absolute inset-0 flex items-center justify-center"
+      className="absolute inset-0 flex items-center justify-center h-screen"
     >
       {/* 
         Wrap the SVG in a div with responsive width.
         Adjust w-[90vw] and md:w-[70vw] as needed to match your hero text scaling.
       */}
-      <div className=" w-[75vw] md:w-[100vw] h-auto">
+      <div className=" w-[75vw] md:w-[100vw]">
         <svg
           ref={svgRef}
           viewBox="0 0 1200 300"
