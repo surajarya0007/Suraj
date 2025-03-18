@@ -21,12 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inspiration.variable} antialiased`}
+        className={`${inspiration.variable} antialiased min-h-screen w-full flex flex-col items-center px-4 sm:px-6 md:px-12`}
       >
         <LenisScrollProvider>
-          <div className="min-h-screen w-full flex flex-col items-center px-4 sm:px-6 md:px-12">
             {children}
-          </div>
         </LenisScrollProvider>
       </body>
     </html>

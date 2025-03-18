@@ -32,7 +32,7 @@ export default function About() {
   useEffect(() => {
     const sectionEl = aboutRef.current;
     if (!sectionEl) return;
-  
+
     // Create a unified timeline with a single scrollTrigger
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -43,13 +43,15 @@ export default function About() {
         scrub: 0.5,
       },
     });
-  
+
     // Left column animation: animate header characters more slowly
     const leftColumn = sectionEl.querySelector(".left-column");
     if (leftColumn) {
       const headers = leftColumn.querySelectorAll("h2");
       headers.forEach((header, index) => {
-        const splitText = new SplitType(header as HTMLElement, { types: "chars" });
+        const splitText = new SplitType(header as HTMLElement, {
+          types: "chars",
+        });
         tl.fromTo(
           splitText.chars,
           {
@@ -74,7 +76,7 @@ export default function About() {
         );
       });
     }
-  
+
     // Right column: apply only character animation more slowly
     const rightParagraphs = sectionEl.querySelectorAll(".right-column p");
     rightParagraphs.forEach((para) => {
@@ -98,12 +100,8 @@ export default function About() {
         },
         ">0.5" // Starts after the left column animation
       );
-      
     });
   }, []);
-  
-  
-  
 
   return (
     <section

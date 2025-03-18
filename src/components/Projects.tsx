@@ -101,7 +101,7 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" ref={projRef} className="py-20 px-6 relative">
+    <section id="testimonials" ref={projRef} className="py-20 px-6 relative">
       <h2 className="text-4xl font-bold text-center mb-10 bg-gradient-to-r from-[#cf005d] to-[#ff4d79] text-transparent bg-clip-text">
         Projects
       </h2>

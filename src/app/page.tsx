@@ -8,6 +8,7 @@ import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import Footer from "../components/Footer";
 import LoadingAnimation from "@/components/LoadingAnimation";
+import Navbar from "@/components/Navbar";
 
 // Custom smooth scroll function
 function smoothScrollTo(
@@ -94,7 +95,7 @@ export default function Home() {
           isLoading ? "visible" : "opacity-100"
         } transition-opacity duration-1000`}
       >
-        
+        <Navbar />
         <Hero />
         <About />
         <Experience />

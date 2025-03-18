@@ -88,7 +88,7 @@ export default function Hero() {
 
   return (
     <section
-  id="hero"
+  id="home"
   ref={heroRef}
   className="h-screen w-full flex items-center justify-center overflow-hidden"
   style={{ visibility: "hidden" }} // Hide until GSAP makes it visible

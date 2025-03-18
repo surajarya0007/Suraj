@@ -79,6 +79,7 @@ export default function Contact() {
     <>
       {/* Hero Section with "Lets Connect" text centered */}
       <section
+        id="contact"
         ref={heroRef}
         className="relative w-full h-screen flex items-center justify-center z-50"
       >
