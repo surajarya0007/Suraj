@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { Menu, X } from "lucide-react";
 import SplitType from "split-type";
 
@@ -10,12 +11,17 @@ interface SplitElement extends HTMLElement {
   _splitTimeline?: gsap.core.Timeline;
 }
 
+// Register the ScrollToPlugin
+gsap.registerPlugin(ScrollToPlugin);
+
 export default function ToggleMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  // Reference for the menu overlay container.
+  const menuOverlayRef = useRef<HTMLDivElement>(null);
 
+  // Menu open/close animations.
   useEffect(() => {
     if (isOpen) {
-      // Animate overlay in
       gsap.to(".menu-overlay", {
         duration: 0.7,
         x: 0,
@@ -28,7 +34,6 @@ export default function ToggleMenu() {
         ease: "power3.out",
       });
 
-      // Nav items rolling animation on open
       gsap.fromTo(
         ".link-text",
         { y: 50, rotationX: 90, opacity: 0, transformOrigin: "bottom" },
@@ -43,7 +48,6 @@ export default function ToggleMenu() {
         }
       );
 
-      // Fade in additional content (email & social links)
       gsap.fromTo(
         ".additional-email",
         { opacity: 0 },
@@ -55,9 +59,7 @@ export default function ToggleMenu() {
         { opacity: 0 },
         { opacity: 1, duration: 0.6, ease: "power3.out", delay: 0.5 }
       );
-      
     } else {
-      // Animate closing out
       gsap.to(".menu-overlay-content", {
         duration: 0.4,
         opacity: 0,
@@ -72,7 +74,26 @@ export default function ToggleMenu() {
     }
   }, [isOpen]);
 
-  // Nav item hover effects (unchanged)
+  // Outside click handler: closes the menu when clicking outside.
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (
+        menuOverlayRef.current &&
+        !menuOverlayRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isOpen]);
+
+  // Nav item hover effects.
   const handleLinkHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const bullet = e.currentTarget.querySelector(".bullet");
     const linkText = e.currentTarget.querySelector(".link-text");
@@ -107,38 +128,43 @@ export default function ToggleMenu() {
     });
   };
 
-  // On hover: perform the split effect with spacing.
+  // Hover effect for additional text with split effect.
   const handleAdditionalTextHover = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget as SplitElement;
-    // Use SplitType to split the text into characters if not already done.
     let splitInstance = el._splitInstance;
     if (!splitInstance) {
       splitInstance = new SplitType(el, { types: "chars" });
       el._splitInstance = splitInstance;
     }
-    // Calculate the center index to offset letters evenly around the middle.
     const centerIndex = splitInstance.chars ? (splitInstance.chars.length - 1) / 2 : 0;
-    // Create a GSAP timeline for the split effect.
     const tl = gsap.timeline();
     tl.to(splitInstance.chars, {
       duration: 0.5,
       rotation: 360,
       scale: 1.3,
-      // Move each character outward from the center to add spacing.
-      x: (i: number) => (i - centerIndex) * 4, // Adjust multiplier (4) to change spacing.
+      x: (i: number) => (i - centerIndex) * 4, // Adjust spacing multiplier if needed.
       stagger: 0.05,
       ease: "power2.out",
     });
-    // Store the timeline so that we can reverse it on hover off.
     el._splitTimeline = tl;
   };
 
-  // On hover off: reverse the split effect (join back).
   const handleAdditionalTextHoverOut = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget as SplitElement;
     if (el._splitTimeline) {
       el._splitTimeline.reverse();
     }
+  };
+
+  // Smooth scroll handler for nav items.
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault(); // Prevent default anchor jump.
+    setIsOpen(false); // Close the menu.
+    gsap.to(window, {
+      duration: 1.5,
+      scrollTo: { y: `#${id}`, offsetY: 80 }, // Adjust offset as needed.
+      ease: "power2.out",
+    });
   };
 
   return (
@@ -152,42 +178,42 @@ export default function ToggleMenu() {
       </button>
 
       {/* Responsive Overlay Menu */}
-      <div className="menu-overlay fixed top-0 right-0 h-full bg-black text-white z-40 w-full md:w-2/3 lg:w-1/2 translate-x-full">
+      <div
+        ref={menuOverlayRef}
+        className="menu-overlay fixed top-0 right-0 h-full bg-black text-white z-40 w-full md:w-2/3 lg:w-1/2 translate-x-full"
+      >
         <div className="menu-overlay-content flex flex-col h-full md:py-3 md:px-8 opacity-0">
           {/* Nav Items Section */}
-          <div className="flex-1 flex flex-col justify-center px-3 ">
+          <div className="flex-1 flex flex-col justify-center px-3">
             <nav className="space-y-1">
-              {[
-                "HOME",
-                "ABOUT",
-                "EXPERIENCE",
-                "SKILLS",
-                "TESTIMONIALS",
-                "CONTACT",
-              ].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="text-4xl md:text-7xl font-bold block transition-all"
-                  onMouseEnter={handleLinkHover}
-                  onMouseLeave={handleLinkHoverOut}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="inline-flex items-center">
-                    <span className="bullet inline-block opacity-0 transform -translate-x-10">
-                      •
+              {["HOME", "ABOUT", "EXPERIENCE", "SKILLS", "TESTIMONIALS", "CONTACT"].map(
+                (item) => (
+                  <a
+                    key={item}
+                    href={`#${item.toLowerCase()}`} // Kept for accessibility.
+                    className="text-4xl md:text-7xl font-bold block transition-all"
+                    onMouseEnter={handleLinkHover}
+                    onMouseLeave={handleLinkHoverOut}
+                    onClick={(e) => handleNavClick(e, item.toLowerCase())}
+                  >
+                    <span className="inline-flex items-center">
+                      <span className="bullet inline-block opacity-0 transform -translate-x-10">
+                        •
+                      </span>
+                      <span className="link-text">{item}</span>
                     </span>
-                    <span className="link-text">{item}</span>
-                  </span>
-                </a>
-              ))}
+                  </a>
+                )
+              )}
             </nav>
           </div>
 
           {/* Additional Content Section */}
-          <div className="py-5 ">
+          <div className="py-5">
             <div className="additional-email">
-              <p className="text-xl md:text-2xl font-serif hover:underline px-8 uppercase mb-2 text-gray-500">Email address</p>
+              <p className="text-xl md:text-2xl font-serif hover:underline px-8 uppercase mb-2 text-gray-500">
+                Email address
+              </p>
               <a
                 href="mailto:suraj.arya@iiitg.ac.in"
                 className="text-lg md:text-xl font-serif hover:underline inline-block px-8"
