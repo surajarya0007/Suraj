@@ -116,7 +116,7 @@ export default function About() {
             {leftLines.map((line, i) => (
               <h2
                 key={i}
-                className="text-7xl font-bold mb-2  leading-none uppercase"
+                className="text-6xl md:text-7xl font-bold mb-4 leading-none uppercase"
               >
                 {line}
               </h2>
@@ -125,7 +125,7 @@ export default function About() {
         </div>
 
         {/* Right Column: Word-by-word paragraphs */}
-        <div className="right-column space-y-6 text-xl leading-relaxed">
+        <div className="right-column space-y-4 md:space-y-6 text-lg md:text-xl leading-relaxed">
           {paragraphs.map((para, idx) => (
             <p key={idx} className="text-gray-300">
               {splitIntoWordSpans(para)}

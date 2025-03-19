@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Experience from "@/components/Experience";
@@ -11,12 +11,8 @@ import LoadingAnimation from "@/components/LoadingAnimation";
 import Navbar from "@/components/Navbar";
 
 // Custom smooth scroll function
-function smoothScrollTo(
-  targetY: number,
-  duration: number,
-  callback: () => void
-) {
-  const startY = 0;
+function smoothScrollTo(targetY: number, duration: number, callback: () => void) {
+  const startY = window.scrollY;
   const diff = targetY - startY;
   duration = duration + diff;
   let start: number | undefined;
@@ -38,9 +34,11 @@ function smoothScrollTo(
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [animateOut, setAnimateOut] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Set scroll to top when the component mounts
+    window.scrollTo(0, 0);
   }, []);
 
   // Save scroll position before page unload
@@ -54,26 +52,42 @@ export default function Home() {
     };
   }, []);
 
-  // Trigger both the fade-out animation and scrolling concurrently
+  // Trigger animations and smooth scroll on mount
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Trigger exit animation
       setAnimateOut(true);
-
-      // Start smooth scrolling concurrently
       const scrollPosition = sessionStorage.getItem("scrollPosition");
       if (scrollPosition) {
         smoothScrollTo(parseInt(scrollPosition, 10), 500, () => {});
         sessionStorage.removeItem("scrollPosition");
       }
-
-      // Remove the overlay after the longer of the two animations (adjust if needed)
       setTimeout(() => {
         setIsLoading(false);
-      }, 1000); // Here, 1000ms covers the fade-out duration
-    }, 3500); // Initial delay before animations begin
+      }, 1000);
+    }, 3500);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  // Listen to scroll events to control Navbar appearance.
+  // When the Hero section is scrolled out of view, show the Navbar.
+  useEffect(() => {
+    const handleScroll = () => {
+      if (heroRef.current) {
+        // Get the bottom position of the Hero element relative to the viewport.
+        const heroBottom = heroRef.current.getBoundingClientRect().bottom;
+        if (heroBottom <= 0) {
+          setShowNavbar(true);
+        } else {
+          setShowNavbar(false);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    // Check immediately in case the page is already scrolled
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -90,13 +104,13 @@ export default function Home() {
       )}
 
       {/* Main Content */}
-      <div
-        className={`${
-          isLoading ? "visible" : "opacity-100"
-        } transition-opacity duration-1000`}
-      >
-        <Navbar />
-        <Hero />
+      <div className={`${isLoading ? "visible" : "opacity-100"} transition-opacity duration-1000`}>
+        {/* Conditionally render Navbar */}
+        {showNavbar && <Navbar />}
+        {/* Attach ref to Hero section */}
+        <div ref={heroRef}>
+          <Hero />
+        </div>
         <About />
         <Experience />
         <Skills />

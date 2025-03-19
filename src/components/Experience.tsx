@@ -123,12 +123,12 @@ export default function Experience() {
     >
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 px-6">
         {/* Left Column */}
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center mt-10">
           <div className="border-l-4 border-[#cf005d] pl-6 left-column">
             {leftLines.map((line, i) => (
               <h2
                 key={i}
-                className="text-7xl font-bold mb-4  leading-none uppercase"
+                className="text-6xl md:text-7xl font-bold mb-4  leading-none uppercase"
               >
                 {line}
               </h2>
@@ -140,11 +140,11 @@ export default function Experience() {
         <div ref={rightColumnRef} className="relative h-screen overflow-hidden">
           <div
             ref={scrollContentRef}
-            className="space-y-[50vh] text-xl leading-relaxed pt-[20vh] pb-[30vh]"
+            className="space-y-[20vh] md:space-y-[50vh] text-lg md:text-xl leading-relaxed pt-[70vh] md:pt-[20vh] pb-[40vh] md:pb-[30vh]"
           >
             {experiences.map((exp, idx) => (
               <div key={idx} className="p-6 bg-opacity-10 rounded-xl max-w-lg">
-                <h3 className="text-2xl font-semibold text-white">
+                <h3 className="text-xl md:text-2xl font-semibold text-white">
                   {exp.title}
                 </h3>
                 <p className="mt-4">
