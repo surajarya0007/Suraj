@@ -91,7 +91,7 @@ const allItems = [
 export default function Skills() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rowRef = useRef<HTMLDivElement | null>(null);
-  const [scrollAnim, setScrollAnim] = useState<any>(null);
+  const [scrollAnim, setScrollAnim] = useState(null);
 
   useEffect(() => {
     const containerEl = containerRef.current;
@@ -144,7 +144,7 @@ export default function Skills() {
  * The text starts hidden (opacity: 0, x: -100). A narrow trigger range forces
  * the text to reset its state on leaving, so its fade/slide animation plays every time it reaches the center.
  */
-function SkillsText({ scrollAnim }: { scrollAnim: any }) {
+function SkillsText({ scrollAnim }: { scrollAnim: gsap.core.Animation | null }) {
   const textRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -211,7 +211,7 @@ function SkillsText({ scrollAnim }: { scrollAnim: any }) {
 /**
  * SkillCard Component with individual scroll-triggered animations.
  */
-function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: any }) {
+function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.Animation | null }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
