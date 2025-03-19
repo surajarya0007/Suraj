@@ -91,7 +91,7 @@ const allItems = [
 export default function Skills() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rowRef = useRef<HTMLDivElement | null>(null);
-  const [scrollAnim, setScrollAnim] = useState(null);
+  const [scrollAnim, setScrollAnim] = useState<gsap.core.Animation | null>(null);
 
   useEffect(() => {
     const containerEl = containerRef.current;
