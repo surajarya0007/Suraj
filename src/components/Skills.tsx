@@ -72,13 +72,14 @@ const skillIcons: Record<string, JSX.Element> = {
 
 const allItems = [
   "C++",
-  "SQL",
+
   "HTML",
   "CSS",
   "JavaScript",
   "React",
   "Next.js",
   "Node.js",
+  "SQL",
   "MySQL",
   "PostgreSQL",
   "MongoDB",
@@ -91,7 +92,9 @@ const allItems = [
 export default function Skills() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rowRef = useRef<HTMLDivElement | null>(null);
-  const [scrollAnim, setScrollAnim] = useState<gsap.core.Animation | null>(null);
+  const [scrollAnim, setScrollAnim] = useState<gsap.core.Animation | null>(
+    null
+  );
 
   useEffect(() => {
     const containerEl = containerRef.current;
@@ -120,7 +123,7 @@ export default function Skills() {
     <section
       ref={containerRef}
       id="skills"
-      className="relative w-full h-full bg-black text-white flex flex-col justify-center overflow-hidden py-10"
+      className="relative w-full h-screen bg-black text-white flex flex-col justify-center overflow-hidden py-10"
     >
       {/* Horizontal scrolling row */}
       <div
@@ -128,9 +131,9 @@ export default function Skills() {
         className="flex justify-center items-center w-max gap-16"
       >
         {/* Spacer with animated Skills text occupying full viewport width */}
-        <div className="flex-shrink-0 w-[100vw]">
-          <SkillsText scrollAnim={scrollAnim} />
-        </div>
+
+        <SkillsText scrollAnim={scrollAnim} />
+
         {allItems.map((item, index) => (
           <SkillCard key={index} item={item} scrollAnim={scrollAnim} />
         ))}
@@ -144,64 +147,66 @@ export default function Skills() {
  * The text starts hidden (opacity: 0, x: -100). A narrow trigger range forces
  * the text to reset its state on leaving, so its fade/slide animation plays every time it reaches the center.
  */
-function SkillsText({ scrollAnim }: { scrollAnim: gsap.core.Animation | null }) {
+function SkillsText({
+  scrollAnim,
+}: {
+  scrollAnim: gsap.core.Animation | null;
+}) {
   const textRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const el = textRef.current;
     if (!el || !scrollAnim) return;
 
-    // Set initial hidden state.
-    gsap.set(el, { opacity: 0, x: 0 });
+    // Use GSAP.matchMedia to set different x values based on viewport width.
+    const mm = gsap.matchMedia();
+    let initialX = 500; // default for larger screens
 
-    // Create a ScrollTrigger with a narrow range.
-    ScrollTrigger.create({
-      trigger: el,
-      containerAnimation: scrollAnim,
-      start: "center center",
-      onEnter: () => {
-        gsap.fromTo(
-          el,
-          {
-            opacity: 0,
-            x: 500,
-            scale: 5.5,
-            y: (i, target, arr) => -40 * Math.abs(i - arr.length / 2),
-            z: () => gsap.utils.random(-500, -600),
-            rotateX: () => gsap.utils.random(-500, -200),
-          },
-          {
-            opacity: 1,
-            duration: 1,
-            x: 0,
-            y: 0,
-            z: 0,
-            rotateX: 0,
-            scale: 2,
-            ease: "power2.out",
-          }
-        );
-      },
-      onLeave: () => {
-        gsap.set(el, { opacity: 0, x: -100 });
-      },
-      onEnterBack: () => {
-        gsap.fromTo(
-          el,
-          { opacity: 0, x: -100 },
-          { opacity: 1, x: 0, duration: 1, ease: "power2.out" }
-        );
-      },
-      onLeaveBack: () => {
-        gsap.set(el, { opacity: 0, x: -100 });
-      },
-      toggleActions: "restart none restart none",
+    mm.add("(max-width: 768px)", () => {
+      initialX = 50; // smaller x for small screens
+      // Reset the element state for small screens.
+      gsap.set(el, { opacity: 0, x: initialX, scale: 5.5 });
     });
+
+    mm.add("(min-width: 769px)", () => {
+      initialX = 500;
+      // Reset the element state for larger screens.
+      gsap.set(el, { opacity: 0, x: initialX, scale: 5.5 });
+    });
+
+    // Create a timeline that's scrubbed by scroll.
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        containerAnimation: scrollAnim,
+        start: "left right", // adjust as needed
+        end: "center center",
+        scrub: true, // ties the animation progress to the scroll position
+      },
+    });
+
+    // Animate the text gradually as the scroll progresses.
+    tl.to(el, {
+      opacity: 1,
+      x: 0,
+      scale: 2,
+      ease: "power2.out",
+      duration: 1,
+    });
+
+    // Clean up on unmount.
+    return () => {
+      tl.kill();
+      mm.revert();
+    };
   }, [scrollAnim]);
 
   return (
-    <div ref={textRef} className="flex items-center justify-center h-full ">
-      <h2 className="text-5xl md:text-9xl font-bold inspiration-regular">
+    <div className="flex items-center justify-center h-full w-[100vw] ml-[100vw] ">
+      <h2
+        ref={textRef}
+        className="text-5xl md:text-9xl font-bold inspiration-regular"
+      >
         S k i l l s
       </h2>
     </div>
@@ -211,7 +216,13 @@ function SkillsText({ scrollAnim }: { scrollAnim: gsap.core.Animation | null }) 
 /**
  * SkillCard Component with individual scroll-triggered animations.
  */
-function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.Animation | null }) {
+function SkillCard({
+  item,
+  scrollAnim,
+}: {
+  item: string;
+  scrollAnim: gsap.core.Animation | null;
+}) {
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -223,7 +234,8 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
         trigger: el,
         containerAnimation: scrollAnim,
         start: "right right",
-        toggleActions: "play none play reverse",
+        end: "center center",
+        scrub: 1,
       },
     };
 
@@ -234,7 +246,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           opacity: 0,
           rotation: 360,
+          scale: 0.5,
+          y: -50,
           ease: "power2.out",
+          delay: 0.2,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -242,7 +258,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
         anim = gsap.from(el, {
           duration: 1,
           scale: 0,
+          rotation: 180,
+          x: -100,
           ease: "back.out(1.7)",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -251,7 +271,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           x: -100,
           opacity: 0,
+          scale: 0.8,
+          rotation: -45,
           ease: "power2.out",
+          delay: 0.15,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -260,7 +284,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           x: 100,
           opacity: 0,
+          scale: 0.8,
+          rotation: 45,
           ease: "power2.out",
+          delay: 0.15,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -268,8 +296,12 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
         anim = gsap.from(el, {
           duration: 1,
           y: 100,
+          x: 50,
           opacity: 0,
+          scale: 1.2,
           ease: "bounce.out",
+          delay: 0.2,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -277,8 +309,12 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
         anim = gsap.from(el, {
           duration: 1,
           y: -100,
+          x: -50,
           opacity: 0,
+          scale: 1.2,
           ease: "bounce.out",
+          delay: 0.2,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -287,7 +323,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           rotationX: 90,
           opacity: 0,
+          scale: 0.7,
+          y: 30,
           ease: "back.out(1.7)",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -296,7 +336,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           rotationY: 90,
           opacity: 0,
+          x: 30,
+          scale: 0.7,
           ease: "back.out(1.7)",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -305,7 +349,12 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           scale: 0.5,
           opacity: 0,
+          x: 100,
+          rotation: 90,
           ease: "elastic.out(1, 0.3)",
+          delay: 0.15,
+          repeat: 0,
+          yoyo: true,
           ...baseConfig,
         });
         break;
@@ -314,7 +363,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           rotation: -180,
           opacity: 0,
+          y: 100,
+          scale: 1.1,
           ease: "power2.out",
+          delay: 0.15,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -324,7 +377,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           x: 50,
           y: 50,
           opacity: 0,
+          rotation: 45,
+          scale: 1.2,
           ease: "power2.out",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -333,7 +390,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           rotation: 720,
           opacity: 0,
+          x: -200,
+          scale: 0.3,
           ease: "expo.out",
+          delay: 0.2,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -342,7 +403,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           y: 200,
           opacity: 0,
+          x: 100,
+          scale: 0.8,
           ease: "bounce.out",
+          delay: 0.2,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -351,7 +416,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           x: -200,
           opacity: 0,
+          y: -50,
+          scale: 1.3,
           ease: "power2.out",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -360,7 +429,11 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
           duration: 1,
           x: 200,
           opacity: 0,
+          y: 50,
+          rotation: -90,
           ease: "power2.out",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
@@ -368,10 +441,15 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
         anim = gsap.from(el, {
           duration: 1,
           opacity: 0,
+          scale: 0.8,
+          ease: "power2.out",
+          delay: 0.1,
+          repeat: 0,
           ...baseConfig,
         });
         break;
     }
+
     return () => {
       if (anim && anim.scrollTrigger) {
         anim.scrollTrigger.kill();
@@ -382,5 +460,9 @@ function SkillCard({ item, scrollAnim }: { item: string; scrollAnim: gsap.core.A
   const Icon = skillIcons[item] || (
     <SiCplusplus size={200} className="text-[#00599C]" />
   );
-  return <div ref={cardRef}>{Icon}</div>;
+  return (
+    <div className="px-6 md:px-12">
+      <div ref={cardRef}>{Icon}</div>
+    </div>
+  );
 }
