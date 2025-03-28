@@ -16,7 +16,7 @@ export const metadata = {
 };
 
 export default function Contact() {
-  const heroRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement | null>(null);
   const heroTextRef = useRef(null);
   const contentRef = useRef(null);
   const introRef = useRef(null);
@@ -136,7 +136,7 @@ export default function Contact() {
       {/* Main Content */}
       <article
         ref={contentRef}
-        className="relative w-full flex flex-col items-center justify-center py-8 pt-2 sm:py-12 space-y-12"
+        className="relative w-full h-screen flex flex-col items-center justify-center py-8 sm:py-12 space-y-12"
       >
         {/* Intro Section */}
         <section ref={introRef} className="flex flex-col items-center justify-center space-y-4 w-full sm:w-3/4">
