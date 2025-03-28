@@ -3,11 +3,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Form from "@/components/Form";
-import {
-  FaEnvelope,
-  FaLinkedin,
-  FaGithub,
-} from "react-icons/fa";
+import { FaEnvelope, FaLinkedin, FaGithub } from "react-icons/fa";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,7 +35,7 @@ export default function Contact() {
           if (heroRef.current) {
             heroRef.current.style.pointerEvents = "none";
           }
-        }
+        },
       });
 
       heroTimeline
@@ -136,37 +132,46 @@ export default function Contact() {
       {/* Main Content */}
       <article
         ref={contentRef}
-        className="relative w-full h-screen flex flex-col items-center justify-center py-8 sm:py-12 space-y-12"
+        className="relative w-full h-screen flex flex-col items-center justify-center py-8 md:py-12 space-y-12"
       >
         {/* Intro Section */}
-        <section ref={introRef} className="flex flex-col items-center justify-center space-y-4 w-full sm:w-3/4">
+        <section
+          ref={introRef}
+          className="flex flex-col items-center justify-center space-y-4 w-3/4"
+        >
           <h1 className="alegreya text-accent font-bold text-4xl sm:text-5xl">
             Contact Me
           </h1>
           <p className="alegreya text-center text-2xl text-black">
-            I would love to hear from you! Whether you have a question, a project idea,
-            or just want to say hi, feel free to reach out.
+            I would love to hear from you! Whether you have a question, a
+            project idea, or just want to say hi, feel free to reach out.
           </p>
         </section>
 
         {/* Contact Details */}
-        <section ref={contactDetailsRef} className="flex flex-col sm:flex-row items-center justify-around w-full sm:w-3/4 space-y-6 sm:space-y-0 sm:space-x-6">
+        <section
+          ref={contactDetailsRef}
+          className="flex flex-row items-center justify-around w-3/4"
+        >
           <div className="flex flex-col items-center">
-            <FaEnvelope className="text-6xl text-accent mb-2" />
+            <FaEnvelope className="md:text-6xl text-4xl text-accent" />
           </div>
           <div className="flex flex-col items-center">
-            <FaLinkedin className="text-6xl text-accent mb-2" />
+            <FaLinkedin className="md:text-6xl text-4xl text-accent" />
           </div>
           <div className="flex flex-col items-center">
-            <FaGithub className="text-6xl text-accent mb-2" />
+            <FaGithub className="md:text-6xl text-4xl text-accent" />
           </div>
         </section>
 
         {/* Contact Form */}
-        <section ref={formRef} className="w-full sm:w-3/4 flex justify-center">
+        <section ref={formRef} className="w-3/4 flex justify-center">
           <Form />
         </section>
       </article>
+      <footer className="py-4 bg-black text-center text-white">
+        <p>&copy; 2025 My Portfolio. All rights reserved.</p>
+      </footer>
     </>
   );
 }

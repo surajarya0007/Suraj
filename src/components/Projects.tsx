@@ -32,7 +32,15 @@ const projects = [
       "Integrated AI for prompt-based design generation.",
     ],
     img: "/projects/3.jpg",
-    tech: ["Next.js", "React.js", "Node.js", "Open API", "Framer-motion", "Fabric.js", "react-three"],
+    tech: [
+      "Next.js",
+      "React.js",
+      "Node.js",
+      "Open API",
+      "Framer-motion",
+      "Fabric.js",
+      "react-three",
+    ],
   },
   {
     name: "You and Me",
@@ -45,7 +53,7 @@ const projects = [
       "Implemented separate database views for the groom's and bride's sides.",
     ],
     img: "/projects/2.jpg",
-    tech: ["Next.js", "React.js", "Node.js",  "Google Drive API", "Framer-motion"],
+    tech: ["Next.js", "React.js", "Node.js", "Google Drive API", "Framer"],
   },
   {
     name: "NFT Market Place (Decentralized App)",
@@ -109,7 +117,7 @@ export default function Projects() {
       });
 
       // Set initial state: hidden and slightly shifted down
-      gsap.set(card, { autoAlpha: 0});
+      gsap.set(card, { autoAlpha: 0 });
 
       // New animation: card fades in and moves upward as it scrolls from center center to top top
       gsap.to(card, {
@@ -123,7 +131,6 @@ export default function Projects() {
           invalidateOnRefresh: true,
         },
       });
-      
     });
   }, []);
 
@@ -151,8 +158,19 @@ export default function Projects() {
               top: `${index * 600}px`,
             }}
           >
+            {/* IMAGE (right on larger screens, bottom on small) */}
+            <div className="w-full md:w-1/2 h-full flex p-4 md:p-5">
+              <Image
+                src={project.img}
+                alt="image"
+                width={700}
+                height={500}
+                className="rounded-2xl"
+              />
+            </div>
+
             {/* CONTENT (left on larger screens, top on small) */}
-            <div className="w-full md:w-1/2 h-full flex flex-col p-6 md:p-8 ">
+            <div className="w-full md:w-1/2 md:h-full flex flex-col p-6 md:p-8 ">
               <div>
                 {project.link ? (
                   <a
@@ -197,17 +215,6 @@ export default function Projects() {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* IMAGE (right on larger screens, bottom on small) */}
-            <div className="w-full md:w-1/2 flex p-3 md:p-5">
-              <Image
-                src={project.img}
-                alt="image"
-                width={700}
-                height={700}
-                className="rounded-2xl"
-              />
             </div>
           </div>
         ))}
