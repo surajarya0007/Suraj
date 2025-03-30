@@ -149,11 +149,11 @@ export default function Projects() {
           direction = e.direction * -1; // Reverse direction on scroll up
 
           // Calculate scroll velocity
-          let currentTime = performance.now();
-          let deltaTime = currentTime - lastTimestamp;
-          let deltaY = Math.abs(window.scrollY - lastScrollY);
+          const currentTime = performance.now();
+          const deltaTime = currentTime - lastTimestamp;
+          const deltaY = Math.abs(window.scrollY - lastScrollY);
 
-          let velocity = deltaY / deltaTime; // Pixels per millisecond
+          const velocity = deltaY / deltaTime; // Pixels per millisecond
           speedMultiplier = Math.min(velocity * 50, 4); // Scale speed, max limit 5x
 
           lastScrollY = window.scrollY;
