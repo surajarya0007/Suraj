@@ -67,7 +67,7 @@ const projects = [
     tech: ["Next.js", "React.js", "Node.js"],
   },
   {
-    name: "Portfolio Website",
+    name: "3D Portfolio Website",
     link: "https://port-taupe-mu.vercel.app/",
     date: "Jun '22",
     description:
@@ -80,6 +80,111 @@ const projects = [
 
 export default function Projects() {
   const projRef = useRef<HTMLDivElement | null>(null);
+
+  // const sliderRef = useRef(null);
+  // const firstTextRef = useRef(null);
+  // const secondTextRef = useRef(null);
+  // const thirdTextRef = useRef(null);
+  // let xPercent = 0;
+  // let direction = -1; // default: scroll left
+
+  // useEffect(() => {
+  //   gsap.registerPlugin(ScrollTrigger);
+  //   requestAnimationFrame(animate);
+  //   // Use GSAP ScrollTrigger to update scroll direction
+  //   gsap.to(sliderRef.current, {
+  //     scrollTrigger: {
+  //       trigger: document.documentElement,
+  //       scrub: 0.25,
+  //       start: "top bottom",
+  //       end: "bottom top",
+  //       onUpdate: (e) => {
+  //         // Reverse the marquee if scrolling up
+  //         direction = e.direction * -1;
+  //       },
+  //     },
+  //   });
+  // }, []);
+
+  // // The animate loop uses a percentage value to shift the texts.
+  // const animate = () => {
+  //   // When xPercent reaches -200, reset to 0 (three texts span 200% of one copy's width)
+  //   if (xPercent < -100) {
+  //     xPercent = 0;
+  //   } else if (xPercent > 0) {
+  //     xPercent = -100;
+  //   }
+  //   // Update all three text paragraphs with the same xPercent shift
+  //   gsap.set(firstTextRef.current, { xPercent: xPercent });
+  //   gsap.set(secondTextRef.current, { xPercent: xPercent });
+  //   gsap.set(thirdTextRef.current, { xPercent: xPercent });
+  //   // Increment xPercent by a small amount scaled by scroll direction.
+  //   xPercent += 0.5 * direction;
+  //   requestAnimationFrame(animate);
+  // };
+
+  const sliderRef = useRef(null);
+  const firstTextRef = useRef(null);
+  const secondTextRef = useRef(null);
+  const thirdTextRef = useRef(null);
+  let xPercent = 0;
+  let direction = -1; // Default: scroll left
+  let speedMultiplier = 1; // Default speed
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    requestAnimationFrame(animate);
+
+    let lastScrollY = window.scrollY;
+    let lastTimestamp = performance.now();
+
+    // Use GSAP ScrollTrigger to track scroll velocity
+    gsap.to(sliderRef.current, {
+      scrollTrigger: {
+        trigger: document.documentElement,
+        scrub: 0.25,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate: (e) => {
+          direction = e.direction * -1; // Reverse direction on scroll up
+
+          // Calculate scroll velocity
+          let currentTime = performance.now();
+          let deltaTime = currentTime - lastTimestamp;
+          let deltaY = Math.abs(window.scrollY - lastScrollY);
+
+          let velocity = deltaY / deltaTime; // Pixels per millisecond
+          speedMultiplier = Math.min(velocity * 50, 4); // Scale speed, max limit 5x
+
+          lastScrollY = window.scrollY;
+          lastTimestamp = currentTime;
+        },
+      },
+    });
+
+    // Slowly return to normal speed when scrolling stops
+    const slowDown = () => {
+      speedMultiplier = Math.max(speedMultiplier * 0.95, 1); // Reduce speed gradually
+      requestAnimationFrame(slowDown);
+    };
+    slowDown();
+  }, []);
+
+  const animate = () => {
+    if (xPercent < -100) {
+      xPercent = 0;
+    } else if (xPercent > 0) {
+      xPercent = -100;
+    }
+
+    gsap.set(firstTextRef.current, { xPercent: xPercent });
+    gsap.set(secondTextRef.current, { xPercent: xPercent });
+    gsap.set(thirdTextRef.current, { xPercent: xPercent });
+
+    xPercent += 0.4 * direction * speedMultiplier; // Adjust speed dynamically
+
+    requestAnimationFrame(animate);
+  };
 
   useEffect(() => {
     if (!projRef.current) return;
@@ -136,7 +241,49 @@ export default function Projects() {
 
   return (
     <section id="testimonials" ref={projRef} className="py-20 px-6 relative">
-      <h2 className="text-4xl font-bold text-center mb-10 text-black">Works</h2>
+      {/* Marquee Container */}
+      <div className="w-full overflow-hidden h-screen flex items-center">
+        <div ref={sliderRef} className="relative flex whitespace-nowrap  mx-0">
+          {/* Three paragraphs of "Works" laid out sequentially.
+              The texts flow continuously. */}
+          <p
+            ref={firstTextRef}
+            style={{
+              margin: 0,
+              fontWeight: 500,
+              paddingRight: "50px",
+              flexShrink: 0,
+            }}
+            className="alegreya text-black font-bold text-[120px] md:text-[230px]"
+          >
+            Works –
+          </p>
+          <p
+            ref={secondTextRef}
+            style={{
+              margin: 0,
+              fontWeight: 500,
+              paddingRight: "50px",
+              flexShrink: 0,
+            }}
+            className="alegreya text-black font-bold text-[120px] md:text-[230px]"
+          >
+            Works –
+          </p>
+          <p
+            ref={thirdTextRef}
+            style={{
+              margin: 0,
+              fontWeight: 500,
+              paddingRight: "50px",
+              flexShrink: 0,
+            }}
+            className="alegreya text-black font-bold text-[120px] md:text-[230px]"
+          >
+            Works –
+          </p>
+        </div>
+      </div>
 
       <div className="cards relative" style={{ height: "420vh" }}>
         {projects.map((project, index) => (
