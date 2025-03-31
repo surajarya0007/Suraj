@@ -1,5 +1,5 @@
 "use client";
-import { useLayoutEffect, useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "./Navbar";
