@@ -39,7 +39,7 @@ export default function Hero() {
       { opacity: 0 }
     );
     // Hide header, marquee container, and side texts initially
-    gsap.set(navRef.current, { opacity: 0, y: -100 });
+    gsap.set(navRef.current, { opacity: 0 });
     gsap.set(marqueeContainerRef.current, { opacity: 0, scale: 0 });
     gsap.set(rightTextRef.current, { opacity: 0, x: 100 });
     gsap.set(leftTextRef.current, { opacity: 0, x: -100 });
@@ -141,7 +141,7 @@ export default function Hero() {
     ease: "power3.inOut",
   })
   .to(
-    ".hero-background",
+    [".hero-background"],
     {
       opacity: 1,
       duration: 1,
@@ -154,7 +154,6 @@ export default function Hero() {
     navRef.current,
     {
       opacity: 1,
-      y: 0,
       duration: 1.5,
       ease: "power3.inOut",
     },
@@ -328,7 +327,7 @@ export default function Hero() {
           </a>
         </nav>
         {/* Mobile Navigation (fallback) */}
-        <div className="md:hidden">
+        <div className="md:hidden ">
           <Navbar />
         </div>
       </header>

@@ -2,7 +2,6 @@
 // import { useLayoutEffect, useEffect, useRef, useState } from "react";
 // import { gsap } from "gsap";
 // import { ScrollTrigger } from "gsap/ScrollTrigger";
-// import { AnimatePresence } from "framer-motion";
 // import Navbar from "./Navbar";
 
 // gsap.registerPlugin(ScrollTrigger);
@@ -29,8 +28,6 @@
 //   const rightTextRef = useRef(null);
 //   const leftTextRef = useRef(null);
 
-//   // State for mobile hamburger toggle
-//   const [isActive, setIsActive] = useState(false);
 
 //   // SURAJ and overall transition animation
 //   useLayoutEffect(() => {
@@ -236,9 +233,6 @@
 //           <Navbar />
 //         </div>
 //       </header>
-
-//       {/* Animate mobile Navbar (overlay) */}
-//       <AnimatePresence>{isActive && <Navbar />}</AnimatePresence>
 
 //       {/* "SURAJ" text container */}
 //       <div

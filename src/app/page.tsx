@@ -57,7 +57,7 @@ export default function Home() {
       setAnimateOut(true);
       const scrollPosition = sessionStorage.getItem("scrollPosition");
       if (scrollPosition) {
-        smoothScrollTo(parseInt(scrollPosition, 10), 500, () => {});
+        smoothScrollTo(parseInt(scrollPosition, 10), 100, () => {});
         sessionStorage.removeItem("scrollPosition");
       }
       setTimeout(() => {
