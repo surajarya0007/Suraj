@@ -240,7 +240,7 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="testimonials" ref={projRef} className="py-20 px-6 relative">
+    <section id="testimonials" ref={projRef} className="py-20 relative">
       {/* Marquee Container */}
       <div className="w-full overflow-hidden h-screen flex items-center">
         <div ref={sliderRef} className="relative flex whitespace-nowrap  mx-0">
@@ -285,7 +285,7 @@ export default function Projects() {
         </div>
       </div>
 
-      <div className="cards relative" style={{ height: "420vh" }}>
+      <div className="cards relative mx-2" style={{ height: "420vh" }}>
         {projects.map((project, index) => (
           <div
             key={index}
@@ -293,12 +293,11 @@ export default function Projects() {
               card absolute
               flex flex-col md:flex-row justify-between
               left-1/2 transform -translate-x-1/2
-              w-full
-              md:w-11/12
+              w-full md:w-11/12
               h-[600px]
               bg-gradient-to-b from-black to-[#cf005d]
               backdrop-blur-lg
-              rounded-4xl
+              rounded-2xl md:rounded-4xl
               shadow-xl
             "
             style={{
@@ -312,7 +311,7 @@ export default function Projects() {
                 alt="image"
                 width={700}
                 height={500}
-                className="rounded-2xl"
+                className="rounded-lg md:rounded-2xl"
               />
             </div>
 
@@ -333,7 +332,7 @@ export default function Projects() {
                     {project.name}
                   </span>
                 )}
-                <p className="text-sm text-gray-400 mt-2">{project.date}</p>
+                <p className="text-sm text-white mt-2">{project.date}</p>
                 <p className="text-gray-300 mt-4">{project.description}</p>
 
                 {project.points.length > 0 && (
