@@ -20,10 +20,16 @@ export async function GET(request: Request) {
     const achi = await fetch(`https://alfa-leetcode-api.onrender.com/${username}/badges`);
     const achiData = await achi.json();
 
+    // Define the type for badge objects
+    interface Badge {
+      displayName?: string;
+      name?: string;
+    }
+
     // Achievements / Badges
-    let achievements: string[] = [];  
+    let achievements: string[] = [];
     if (Array.isArray(achiData.badges) && achiData.badges.length) {
-      achievements = achiData.badges.map((b: { displayName: any; name: any; }) => b.displayName || b.name || "Badge");
+      achievements = achiData.badges.map((b: Badge) => b.displayName || b.name || "Badge");
     } else {
       if (totalSolved > 500) achievements.push("DP Expert");
       if (totalSolved > 300) achievements.push("Algo Specialist");
@@ -50,7 +56,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(responseData);
 
-  } catch (err) {
+  } catch (err: any) {
     console.error(`Error fetching LeetCode data for user ${username}:`, err);
     // Handle specific error types, e.g., JSON parsing error
     if (err instanceof SyntaxError) {
@@ -61,7 +67,7 @@ export async function GET(request: Request) {
     }
     // For other errors (network issues, errors thrown before parsing)
     return NextResponse.json(
-      { error: "Failed to fetch LeetCode data due to an internal error.", details: err },
+      { error: "Failed to fetch LeetCode data due to an internal error.", details: err.message },
       { status: 500 }
     );
   }
