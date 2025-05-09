@@ -95,11 +95,11 @@ export async function GET(request: Request) {
     };
 
     return NextResponse.json(userData);
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Error fetching GfG profile from arnoob16's API for user ${username}:`, error);
     // This catch block handles network errors during fetch or if res.json() fails (e.g., API returns non-JSON response)
     return NextResponse.json(
-      { error: "Internal server error while processing GfG data", details: error.message },
+      { error: "Internal server error while processing GfG data", details: error },
       { status: 500 }
     );
   }

@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     // Count unique problems solved
     const solvedProblems = new Set()
     if (submissionsData.status === "OK") {
-      submissionsData.result.forEach((submission: any) => {
+      submissionsData.result.forEach((submission: { verdict: string; problem: { contestId: number; index: string } }) => {
         if (submission.verdict === "OK") {
           solvedProblems.add(`${submission.problem.contestId}-${submission.problem.index}`)
         }

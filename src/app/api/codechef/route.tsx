@@ -44,10 +44,10 @@ export async function GET(request: Request) {
 
         return NextResponse.json(userData);
 
-    } catch (error: any) {
+    } catch (error) {
         console.error(`Error fetching CodeChef profile from API for user ${username}:`, error);
         return NextResponse.json(
-            { error: "Internal server error while processing CodeChef data", details: error.message },
+            { error: "Internal server error while processing CodeChef data", details: error },
             { status: 500 }
         );
     }
