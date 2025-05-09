@@ -56,7 +56,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(responseData);
 
-  } catch (err: any) {
+  } catch (err) {
     console.error(`Error fetching LeetCode data for user ${username}:`, err);
     // Handle specific error types, e.g., JSON parsing error
     if (err instanceof SyntaxError) {
@@ -67,7 +67,7 @@ export async function GET(request: Request) {
     }
     // For other errors (network issues, errors thrown before parsing)
     return NextResponse.json(
-      { error: "Failed to fetch LeetCode data due to an internal error.", details: err.message },
+      { error: "Failed to fetch LeetCode data due to an internal error.", details: err},
       { status: 500 }
     );
   }
