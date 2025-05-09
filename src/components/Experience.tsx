@@ -143,15 +143,13 @@ export default function Experience() {
             className="space-y-[20vh] md:space-y-[50vh] text-lg md:text-xl leading-relaxed pt-[70vh] md:pt-[20vh] pb-[40vh] md:pb-[30vh]"
           >
             {experiences.map((exp, idx) => (
-              <div key={idx} className="p-6 bg-opacity-10 rounded-xl max-w-lg">
-                <h3 className="text-xl md:text-2xl font-semibold text-white">
-                  {exp.title}
-                </h3>
+              <div
+                key={idx}
+                className="p-6 bg-black/20 backdrop-blur-sm rounded-xl max-w-lg border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(207,0,93,0.2)]"
+              >
+                <h3 className="text-xl md:text-2xl font-semibold text-white">{exp.title}</h3>
                 <p className="mt-4">
-                  <span className="font-semibold text-[#cf005d]">
-                    Tech Stack:
-                  </span>{" "}
-                  {splitIntoWordSpans(exp.techStack)}
+                  <span className="font-semibold text-[#cf005d]">Tech Stack:</span> {splitIntoWordSpans(exp.techStack)}
                 </p>
                 <ul className="list-disc list-inside mt-4 space-y-4 text-gray-300">
                   {exp.points.map((point, i) => (

@@ -8,6 +8,7 @@ import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import LoadingAnimation from "@/components/LoadingAnimation";
 import Navbar from "@/components/Navbar";
+import CompetitiveProgramming from "@/components/CompetitiveProgramming";
 
 // Custom smooth scroll function
 function smoothScrollTo(targetY: number, duration: number, callback: () => void) {
@@ -112,6 +113,7 @@ export default function Home() {
         </div>
         <About />
         <Experience />
+        <CompetitiveProgramming />
         <Skills />
         <Projects />
         <Contact />

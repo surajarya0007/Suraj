@@ -186,7 +186,7 @@ export default function ToggleMenu() {
           {/* Nav Items Section */}
           <div className="flex-1 flex flex-col justify-center px-3">
             <nav className="space-y-1">
-              {["HOME", "ABOUT", "EXPERIENCE", "SKILLS", "TESTIMONIALS", "CONTACT"].map(
+              {["HOME", "ABOUT", "EXPERIENCE", "COMPETITIVE", "SKILLS", "TESTIMONIALS", "CONTACT"].map(
                 (item) => (
                   <a
                     key={item}
