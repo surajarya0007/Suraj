@@ -107,7 +107,7 @@ export default function Form() {
               message: "Name should be atleast 3 characters long.",
             },
           })}
-          className="w-full bg-gradient-to-b from-black to-[#cf005d] p-2 rounded-md shadow-lg focus:ring-2 focus:ring-accent/50 "
+          className="w-full bg-[#cf005d]/20 text-white p-2 rounded-md shadow-lg focus:ring-2 focus:ring-accent/50 "
         />
         {errors.name && (
           <span className="inline-block self-start text-accent">
@@ -122,7 +122,7 @@ export default function Form() {
             required: "This field is required!",
             pattern: /^\S+@\S+$/i,
           })}
-          className="w-full bg-gradient-to-b from-black to-[#cf005d] p-2 rounded-md shadow-lg text-foreground focus:ring-2 focus:ring-accent/50 custom-bg"
+          className="w-full bg-[#cf005d]/20 text-white p-2 rounded-md shadow-lg text-foreground focus:ring-2 focus:ring-accent/50 custom-bg"
         />
         {errors.email && (
           <span className="inline-block self-start text-accent">
@@ -143,7 +143,7 @@ export default function Form() {
               message: "Message should be more than 50 characters!",
             },
           })}
-          className="w-full bg-gradient-to-b from-black to-[#cf005d] p-2 rounded-md shadow-lg text-foreground focus:ring-2 focus:ring-accent/50 custom-bg"
+          className="w-full bg-[#cf005d]/20 text-white p-2 rounded-md shadow-lg text-foreground focus:ring-2 focus:ring-accent/50 custom-bg"
         />
         {errors.message && (
           <span className="inline-block self-start text-accent">
