@@ -88,8 +88,8 @@ export default function CompetitiveProgramming() {
       )
     }
 
-    let cardTweens: gsap.core.Tween[] = [];
-    let cardScrollTriggers: ScrollTrigger[] = [];
+    const cardTweens: gsap.core.Tween[] = [];
+    const cardScrollTriggers: ScrollTrigger[] = [];
 
     if (activePlatform && cardsContainerRef.current && !isLoading) {
       // Ensure cards are selected from the current cardsContainerRef after platform switch
