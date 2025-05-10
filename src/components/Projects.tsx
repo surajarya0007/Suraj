@@ -336,7 +336,7 @@ export default function Projects() {
   }, [activeTab])
 
   return (
-    <section id="testimonials" ref={projRef} className="py-20 relative bg-gradient-to-b from-black to-[#cf005d]">
+    <section id="testimonials" ref={projRef} className="py-20 h-full relative bg-gradient-to-b from-black ">
       {/* Title */}
       <div ref={titleRef} className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Featured Projects</h2>

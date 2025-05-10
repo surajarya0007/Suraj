@@ -132,7 +132,7 @@ export default function Contact() {
       {/* Main Content */}
       <article
         ref={contentRef}
-        className="relative w-full h-screen flex flex-col items-center justify-center py-8 md:py-12 space-y-12"
+        className="relative w-full h-screen bg-gradient-to-b to-black flex flex-col items-center justify-center py-8 md:py-12 space-y-12"
       >
         {/* Intro Section */}
         <section

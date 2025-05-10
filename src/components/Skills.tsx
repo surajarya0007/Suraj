@@ -72,7 +72,6 @@ const skillIcons: Record<string, JSX.Element> = {
 
 const allItems = [
   "C++",
-
   "HTML",
   "CSS",
   "JavaScript",

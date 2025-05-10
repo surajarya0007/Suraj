@@ -1,11 +1,14 @@
 "use client"
 
-import { useEffect, useState, type JSX } from "react"
-import { motion, useAnimation, AnimatePresence, type Variants } from "framer-motion"
-import { useInView } from "react-intersection-observer"
+import { useEffect, useState, type JSX, useRef } from "react"
+import { motion, AnimatePresence, type Variants } from "framer-motion"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { SiLeetcode, SiCodechef, SiHackerrank, SiGeeksforgeeks, SiCodeforces } from "react-icons/si"
 import { ExternalLink, Code, Award, Star, Users, CheckCircle2, RefreshCw } from "lucide-react"
 import FetchData, { type PlatformData } from "@/components/FetchData"
+
+gsap.registerPlugin(ScrollTrigger)
 
 // logo mapping
 const logoComponents: Record<string, JSX.Element> = {
@@ -16,15 +19,7 @@ const logoComponents: Record<string, JSX.Element> = {
   codeforces: <SiCodeforces className="w-full h-full" />,
 }
 
-// Animation variants
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-  },
-}
-
+// Animation variants for internal card content and hovers
 const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
@@ -48,90 +43,131 @@ const profileCardContentHover: Variants = {
   hover: { opacity: 1, y: -5, transition: { duration: 0.3 } },
 }
 
+const containerVariants: Variants = { // Kept for AnimatePresence on platform change
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+}
+
+
 export default function CompetitiveProgramming() {
-  const [ref, inView] = useInView({ threshold: 0.1 })
-  const controls = useAnimation()
-  const [isInitialRender, setIsInitialRender] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Get platform data from FetchData component
-  const { platformsData, isLoading, error, lastFetched } = FetchData()
+  const titleRef = useRef<HTMLDivElement | null>(null)
+  const cardsContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Set active platform state
+  const { platformsData, isLoading, error, lastFetched } = FetchData()
   const [activePlatform, setActivePlatform] = useState<PlatformData | null>(null)
 
-  // Update active platform when data is loaded
   useEffect(() => {
     if (platformsData.length > 0 && !activePlatform) {
       setActivePlatform(platformsData[0])
     }
   }, [platformsData, activePlatform])
 
+  // GSAP Animations useEffect
   useEffect(() => {
-    if (inView) {
-      controls.start("visible")
-    } else {
-      controls.start("hidden")
+    // Animate title
+    if (titleRef.current) {
+      gsap.fromTo( // Changed from const titleTween to direct call
+        titleRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: titleRef.current,
+            start: "top bottom-=100",
+            end: "bottom center",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
     }
-  }, [controls, inView])
 
-  // Reset animation state on initial render or when inView changes
-  useEffect(() => {
-    if (isInitialRender) {
-      setIsInitialRender(false) // Set to false after the initial render
-      return // Skip the initial reset
+    let cardTweens: gsap.core.Tween[] = [];
+    let cardScrollTriggers: ScrollTrigger[] = [];
+
+    if (activePlatform && cardsContainerRef.current && !isLoading) {
+      // Ensure cards are selected from the current cardsContainerRef after platform switch
+      const cards = gsap.utils.toArray<HTMLElement>(cardsContainerRef.current.querySelectorAll(".cp-card"));
+      
+      // Kill previous ScrollTriggers & tweens for cards to avoid conflicts
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars.trigger && (trigger.vars.trigger as HTMLElement).classList.contains('cp-card')) {
+          trigger.kill();
+        }
+      });
+      gsap.killTweensOf(cards);
+
+
+      cards.forEach((card, index) => {
+        gsap.set(card, { opacity: 0, y: 100, scale: 0.95 }); // Set initial state
+        const tween = gsap.to(card, {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: card, // Each card triggers its own animation based on vertical scroll
+            start: "top bottom-=100",
+            toggleActions: "play none none reverse",
+          },
+          delay: index * 0.15,
+        });
+        cardTweens.push(tween);
+        if (tween.scrollTrigger) {
+          cardScrollTriggers.push(tween.scrollTrigger);
+        }
+      });
     }
-    controls.start("hidden")
-    if (inView) {
-      controls.start("visible")
-    }
-  }, [controls, inView])
+     // Cleanup function
+     return () => {
+      if (titleRef.current) {
+        const titleST = gsap.getTweensOf(titleRef.current);
+        titleST.forEach(t => t.kill());
+        gsap.killTweensOf(titleRef.current);
+      }
+      cardTweens.forEach(tween => tween.kill());
+      cardScrollTriggers.forEach(st => st.kill());
+    };
+  }, [activePlatform, isLoading]) // Re-run GSAP animations when activePlatform changes or loading completes
+
 
   // Function to manually refresh data
   const refreshData = () => {
     setIsRefreshing(true)
-    // Clear localStorage to force a fresh fetch
     localStorage.removeItem("platformsData")
     localStorage.removeItem("platformsDataTimestamp")
-    // Reload the page to trigger a fresh fetch
     window.location.reload()
   }
 
   // Format the last fetched time
   const formatLastFetched = () => {
     if (!lastFetched) return "Never"
-
     const now = new Date()
     const diff = now.getTime() - lastFetched.getTime()
-
-    // Less than a minute
-    if (diff < 60 * 1000) {
-      return "Just now"
-    }
-
-    // Less than an hour
+    if (diff < 60 * 1000) return "Just now"
     if (diff < 60 * 60 * 1000) {
       const minutes = Math.floor(diff / (60 * 1000))
       return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`
     }
-
-    // Less than a day
     if (diff < 24 * 60 * 60 * 1000) {
       const hours = Math.floor(diff / (60 * 60 * 1000))
       return `${hours} hour${hours !== 1 ? "s" : ""} ago`
     }
-
-    // More than a day
     const days = Math.floor(diff / (24 * 60 * 60 * 1000))
     return `${days} day${days !== 1 ? "s" : ""} ago`
   }
 
-  // Show loading state
   if (isLoading) {
     return (
       <section
         id="competitive"
-        ref={ref}
         className="min-h-screen pt-20 relative bg-gradient-to-b to-black flex items-center justify-center"
       >
         <div className="text-white text-2xl flex flex-col items-center">
@@ -145,12 +181,10 @@ export default function CompetitiveProgramming() {
     )
   }
 
-  // Show error state
   if (error || !activePlatform) {
     return (
       <section
         id="competitive"
-        ref={ref}
         className="min-h-screen pt-20 relative bg-gradient-to-b to-black flex items-center justify-center"
       >
         <div className="text-white text-2xl flex flex-col items-center">
@@ -171,20 +205,14 @@ export default function CompetitiveProgramming() {
   }
 
   return (
-    <section id="competitive" ref={ref} className="h-full py-20 relative bg-gradient-to-b to-black">
-      <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('/code-pattern.png')] bg-repeat"></div>
-
+    <section id="competitive" className="max-h-screen py-10 md:py-20 relative bg-gradient-to-b to-black">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div className="text-center mb-7" variants={containerVariants} initial="hidden" animate={controls}>
-          <motion.h2 variants={itemVariants} className="text-4xl md:text-6xl font-bold text-white mb-4">
+        {/* Title section */}
+        <div ref={titleRef} className="text-center">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-3">
             Competitive Programming
-          </motion.h2>
-          <motion.p variants={itemVariants} className="hidden lg:block text-gray-300 max-w-2xl mx-auto">
-            Solving complex algorithmic challenges across multiple platforms
-          </motion.p>
-
-          {/* Last updated info and refresh button */}
-          <motion.div variants={itemVariants} className="flex items-center justify-center mt-2 text-sm text-gray-400">
+          </h2>
+          <div className="flex items-center justify-center text-sm text-gray-400">
             <span>Last updated: {formatLastFetched()}</span>
             <button
               onClick={refreshData}
@@ -194,20 +222,21 @@ export default function CompetitiveProgramming() {
             >
               <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
+        {/* Platform selection buttons - Horizontal scroll on small screens */}
         <motion.div
-          className="flex flex-wrap justify-center gap-4 mb-12"
-          variants={containerVariants}
-          initial="hidden"
-          animate={controls}
+          className="flex flex-row flex-nowrap overflow-x-auto justify-start md:justify-center gap-4 my-10 md:my-2 py-2 scrollbar-hide"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
         >
           {platformsData.map((pl) => (
             <motion.button
               key={pl.name}
               onClick={() => setActivePlatform(pl)}
-              variants={itemVariants}
+              // Removed itemVariants from here for simplicity, direct animation is fine
               whileHover={{
                 scale: 1.05,
                 boxShadow: `0 0 12px ${pl.color}`,
@@ -216,7 +245,7 @@ export default function CompetitiveProgramming() {
               }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className={`px-4 py-2 rounded-full flex items-center space-x-2 border border-transparent ${
+              className={`px-4 py-2  rounded-full flex items-center space-x-2 border border-transparent flex-shrink-0 ${ // Added flex-shrink-0
                 activePlatform.name === pl.name
                   ? "bg-white text-black shadow-lg border-white"
                   : "bg-black/30 text-white hover:border-white/30"
@@ -230,28 +259,30 @@ export default function CompetitiveProgramming() {
           ))}
         </motion.div>
 
+        {/* Cards section - Horizontal scroll on small screens, 3 cards per row */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activePlatform.name}
+            ref={cardsContainerRef}
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="flex flex-row flex-nowrap overflow-x-auto gap-2 md:gap-8 py-4 scrollbar-hide"
           >
             {/* Profile Card */}
             <motion.div
-              variants={itemVariants}
+              className="cp-card bg-black/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 cursor-pointer w-72 md:w-3/10 flex-shrink-0" // Added w-80 and flex-shrink-0
+              // GSAP handles entry animation, Framer Motion handles hover
               whileHover={{
                 scale: 1.02,
                 boxShadow: `0 4px 20px ${activePlatform.color}50`,
                 background: `linear-gradient(to bottom, black, ${activePlatform.color}20)`,
               }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="bg-black/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 cursor-pointer"
               style={{ borderColor: `${activePlatform.color}30` }}
             >
-              <motion.div variants={containerVariants} initial="hidden" animate="visible">
+              <motion.div variants={containerVariants} initial="hidden" animate="visible"> {/* For internal item staggering */}
                 <motion.div variants={itemVariants} className="flex items-center space-x-4 mb-6">
                   <motion.div
                     className="w-16 h-16 rounded-lg flex items-center justify-center p-3 text-white"
@@ -315,14 +346,13 @@ export default function CompetitiveProgramming() {
 
             {/* Statistics Card */}
             <motion.div
-              variants={itemVariants}
+              className="cp-card bg-black/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 cursor-pointer w-72 md:w-3/10 flex-shrink-0" // Added w-80 and flex-shrink-0
               whileHover={{
                 scale: 1.05,
                 boxShadow: `0 0 20px ${activePlatform.color}80`,
                 transition: { type: "spring", stiffness: 300, damping: 20 },
                 background: `linear-gradient(to bottom, black, ${activePlatform.color}20)`,
               }}
-              className="bg-black/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 cursor-pointer"
               style={{ borderColor: `${activePlatform.color}30` }}
             >
               <motion.div variants={containerVariants} initial="hidden" animate="visible">
@@ -360,7 +390,7 @@ export default function CompetitiveProgramming() {
                   ))}
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="mt-6 pt-6 border-t border-white/10">
+                <motion.div variants={itemVariants} className="hidden md:block mt-6 pt-6 border-t border-white/10">
                   <motion.h4 variants={itemVariants} className="text-white font-medium mb-3">
                     Skill Progress
                   </motion.h4>
@@ -404,14 +434,13 @@ export default function CompetitiveProgramming() {
 
             {/* Achievements Card */}
             <motion.div
-              variants={itemVariants}
+              className="cp-card bg-black/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 cursor-pointer w-72 md:w-3/10 flex-shrink-0" // Added w-80 and flex-shrink-0
               whileHover={{
                 scale: 1.02,
                 boxShadow: `0 4px 20px ${activePlatform.color}50`,
                 background: `linear-gradient(to bottom, black, ${activePlatform.color}20)`,
               }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="bg-black/30 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 cursor-pointer"
             >
               <motion.div variants={containerVariants} initial="hidden" animate="visible">
                 <motion.h3 variants={itemVariants} className="text-xl font-bold text-white mb-6 flex items-center">
